@@ -138,18 +138,19 @@ const Dashboard: React.FC = () => {
           }}
         >
           <Statistic
-            title={<span style={{ color: 'rgba(0,0,0,0.7)' }}>已租房源</span>}
-            value={stats?.houses?.rented || 6}
-            prefix={
-              <span style={{ color: '#fa8c16', fontSize: 20 }}>已租</span>
-            }
+            title={<span style={{ color: 'rgba(0,0,0,0.7)' }}>合同总数</span>}
+            value={stats?.contracts?.total || 5}
+            prefix={<span style={{ color: '#fa8c16', fontSize: 16 }}>📋</span>}
             precision={0}
-            suffix={<span style={{ color: 'rgba(0,0,0,0.6)' }}>套</span>}
+            suffix={<span style={{ color: 'rgba(0,0,0,0.6)' }}>份</span>}
             valueStyle={{ color: '#fa8c16', fontSize: 28, fontWeight: 'bold' }}
           />
           <div style={{ marginTop: 8 }}>
             <span style={{ color: 'rgba(0,0,0,0.5)', fontSize: 12 }}>
-              目标完成 <span style={{ color: '#52c41a' }}>92%</span>
+              生效中{' '}
+              <span style={{ color: '#52c41a' }}>
+                {stats?.contracts?.active || 3}份
+              </span>
             </span>
           </div>
         </Card>
@@ -164,25 +165,21 @@ const Dashboard: React.FC = () => {
           }}
         >
           <Statistic
-            title={<span style={{ color: 'rgba(0,0,0,0.7)' }}>房源空置率</span>}
-            value={stats?.houses?.vacancyRate || 12.5}
-            suffix={<span style={{ color: 'rgba(0,0,0,0.6)' }}>%</span>}
-            prefix={<HomeOutlined style={{ color: '#1890ff' }} />}
+            title={<span style={{ color: 'rgba(0,0,0,0.7)' }}>月度收入</span>}
+            value={stats?.contracts?.monthlyRevenue || 25800}
+            suffix={<span style={{ color: 'rgba(0,0,0,0.6)' }}>元</span>}
+            prefix={<span style={{ color: '#1890ff', fontSize: 16 }}>💰</span>}
             valueStyle={{ color: '#1890ff', fontSize: 28, fontWeight: 'bold' }}
           />
           <div style={{ marginTop: 8 }}>
             <Progress
-              percent={100 - parseFloat(stats?.houses?.vacancyRate || '12.5')}
+              percent={85}
               size="small"
               showInfo={false}
               strokeColor="#52c41a"
             />
             <span style={{ color: 'rgba(0,0,0,0.5)', fontSize: 12 }}>
-              出租率{' '}
-              {(100 - parseFloat(stats?.houses?.vacancyRate || '12.5')).toFixed(
-                1,
-              )}
-              %
+              目标完成 85%
             </span>
           </div>
         </Card>

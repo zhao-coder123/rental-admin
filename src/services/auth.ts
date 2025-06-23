@@ -42,6 +42,29 @@ export async function getCurrentUser(): Promise<
   });
 }
 
+// 更新个人信息
+export async function updateProfile(profileData: {
+  name?: string;
+  phone?: string;
+  email?: string;
+}): Promise<ApiResponse<LoginResult['user']>> {
+  return request('/api/auth/profile', {
+    method: 'PUT',
+    data: profileData,
+  });
+}
+
+// 修改密码
+export async function changePassword(passwordData: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<ApiResponse<null>> {
+  return request('/api/auth/password', {
+    method: 'PUT',
+    data: passwordData,
+  });
+}
+
 // 用户登出
 export async function logout(): Promise<void> {
   localStorage.removeItem('access_token');

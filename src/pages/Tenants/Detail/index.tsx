@@ -1,9 +1,10 @@
-import type { Appointment, Consultation, Tenant } from '@/types';
+import type { Appointment, Consultation, Contract, Tenant } from '@/types';
 import {
   ArrowLeftOutlined,
   CalendarOutlined,
   ContactsOutlined,
   EditOutlined,
+  FileProtectOutlined,
   FileTextOutlined,
   MessageOutlined,
   PhoneOutlined,
@@ -38,6 +39,7 @@ const TenantDetail: React.FC = () => {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -47,6 +49,15 @@ const TenantDetail: React.FC = () => {
     high: { color: 'red', text: '高意向', bgColor: '#fff1f0' },
     medium: { color: 'orange', text: '中意向', bgColor: '#fff7e6' },
     low: { color: 'green', text: '低意向', bgColor: '#f6ffed' },
+  };
+
+  // 合同状态映射
+  const contractStatusMap = {
+    draft: { color: 'default', text: '草稿' },
+    signed: { color: 'processing', text: '已签署' },
+    active: { color: 'success', text: '生效中' },
+    expired: { color: 'warning', text: '已到期' },
+    terminated: { color: 'error', text: '已终止' },
   };
 
   // 模拟数据
@@ -101,6 +112,27 @@ const TenantDetail: React.FC = () => {
     },
   ];
 
+  // 模拟合同数据
+  const mockContracts: Contract[] = [
+    {
+      id: '1',
+      houseId: 'h1',
+      houseAddress: '朝阳区建国门外大街1号',
+      tenantId: id || '1',
+      tenantName: '张小明',
+      rent: 4500,
+      deposit: 9000,
+      startDate: '2024-01-01',
+      endDate: '2024-12-31',
+      paymentMethod: 'monthly',
+      status: 'active',
+      signDate: '2023-12-15T10:00:00.000Z',
+      contractFile: '',
+      createTime: '2023-12-15T10:00:00.000Z',
+      updateTime: '2023-12-15T10:00:00.000Z',
+    },
+  ];
+
   // 获取客户详情数据
   const fetchTenantDetail = async () => {
     setLoading(true);
@@ -114,6 +146,7 @@ const TenantDetail: React.FC = () => {
       setTenant(mockTenant);
       setConsultations(mockConsultations);
       setAppointments(mockAppointments);
+      setContracts(mockContracts);
     } catch (error) {
       message.error('获取客户详情失败');
     } finally {
@@ -279,6 +312,89 @@ const TenantDetail: React.FC = () => {
             </Descriptions>
           </Card>
 
+          {/* 合同记录 */}
+          <Card
+            title={
+              <Space>
+                <FileProtectOutlined style={{ color: '#fa541c' }} />
+                合同记录
+              </Space>
+            }
+            extra={
+              <Button
+                type="primary"
+                size="small"
+                onClick={() =>
+                  history.push(`/contracts/create?tenantId=${tenant.id}`)
+                }
+              >
+                新建合同
+              </Button>
+            }
+            style={{ marginBottom: 24 }}
+          >
+            {contracts.length > 0 ? (
+              contracts.map((contract) => (
+                <Card
+                  key={contract.id}
+                  size="small"
+                  style={{ marginBottom: 16 }}
+                  bodyStyle={{ padding: 16 }}
+                >
+                  <Row justify="space-between" align="middle">
+                    <Col span={16}>
+                      <div
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 500,
+                          marginBottom: 4,
+                        }}
+                      >
+                        {contract.houseAddress}
+                      </div>
+                      <Space size={16}>
+                        <div style={{ color: '#666', fontSize: 12 }}>
+                          租金:{' '}
+                          <span
+                            style={{ color: '#fa541c', fontWeight: 'bold' }}
+                          >
+                            ¥{contract.rent.toLocaleString()}/月
+                          </span>
+                        </div>
+                        <div style={{ color: '#666', fontSize: 12 }}>
+                          押金: ¥{contract.deposit.toLocaleString()}
+                        </div>
+                        <div style={{ color: '#666', fontSize: 12 }}>
+                          期限: {contract.startDate} ~ {contract.endDate}
+                        </div>
+                      </Space>
+                    </Col>
+                    <Col span={8} style={{ textAlign: 'right' }}>
+                      <Space direction="vertical" size={4}>
+                        <Tag color={contractStatusMap[contract.status].color}>
+                          {contractStatusMap[contract.status].text}
+                        </Tag>
+                        <Button
+                          type="link"
+                          size="small"
+                          onClick={() =>
+                            history.push(`/contracts/detail/${contract.id}`)
+                          }
+                        >
+                          查看详情
+                        </Button>
+                      </Space>
+                    </Col>
+                  </Row>
+                </Card>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', color: '#999', padding: 32 }}>
+                暂无合同记录
+              </div>
+            )}
+          </Card>
+
           {/* 咨询记录 */}
           <Card
             title={
@@ -440,6 +556,22 @@ const TenantDetail: React.FC = () => {
                   suffix="次"
                 />
               </Col>
+              <Col span={12} style={{ marginTop: 16 }}>
+                <Statistic
+                  title="合同数量"
+                  value={contracts.length}
+                  valueStyle={{ color: '#fa541c' }}
+                  suffix="份"
+                />
+              </Col>
+              <Col span={12} style={{ marginTop: 16 }}>
+                <Statistic
+                  title="月度租金"
+                  value={contracts.reduce((sum, c) => sum + c.rent, 0)}
+                  valueStyle={{ color: '#1890ff' }}
+                  prefix="¥"
+                />
+              </Col>
             </Row>
           </Card>
 
@@ -467,6 +599,16 @@ const TenantDetail: React.FC = () => {
                 }
               >
                 创建预约
+              </Button>
+              <Button
+                block
+                icon={<FileProtectOutlined />}
+                onClick={() =>
+                  history.push(`/contracts/create?tenantId=${tenant.id}`)
+                }
+                type="primary"
+              >
+                创建合同
               </Button>
             </Space>
           </Card>
@@ -512,11 +654,11 @@ const TenantDetail: React.FC = () => {
               >
                 <InputNumber
                   style={{ width: '100%' }}
+                  min={0}
                   formatter={(value) =>
                     `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                   }
                   parser={(value) => value!.replace(/¥\s?|(,*)/g, '')}
-                  addonAfter="元/月"
                 />
               </Form.Item>
             </Col>

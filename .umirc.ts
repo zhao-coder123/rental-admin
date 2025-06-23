@@ -95,6 +95,29 @@ export default defineConfig({
       ],
     },
     {
+      name: '合同管理',
+      path: '/contracts',
+      icon: 'FileTextOutlined',
+      access: 'canAccess',
+      routes: [
+        {
+          path: '/contracts',
+          redirect: '/contracts/list',
+        },
+        {
+          name: '合同列表',
+          path: '/contracts/list',
+          component: './Contracts/List',
+        },
+        {
+          name: '合同详情',
+          path: '/contracts/detail/:id',
+          component: './Contracts/Detail',
+          hideInMenu: true,
+        },
+      ],
+    },
+    {
       name: '业绩统计',
       path: '/statistics',
       component: './Statistics',
@@ -117,6 +140,13 @@ export default defineConfig({
           component: './Users/List',
         },
       ],
+    },
+    {
+      name: '个人中心',
+      path: '/user',
+      component: './User',
+      hideInMenu: true,
+      access: 'canAccess',
     },
   ],
   npmClient: 'pnpm',

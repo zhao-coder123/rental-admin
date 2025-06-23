@@ -53,6 +53,25 @@ export interface Appointment {
   createTime: string;
 }
 
+// 合同类型
+export interface Contract {
+  id: string;
+  houseId: string;
+  houseAddress: string;
+  tenantId: string;
+  tenantName: string;
+  rent: number;
+  deposit: number; // 押金
+  startDate: string;
+  endDate: string;
+  paymentMethod: 'monthly' | 'quarterly' | 'annually'; // 支付方式
+  status: 'draft' | 'signed' | 'active' | 'expired' | 'terminated';
+  signDate?: string;
+  contractFile?: string; // 合同文件
+  createTime: string;
+  updateTime: string;
+}
+
 // 业绩统计类型
 export interface PerformanceStats {
   monthlyDeals: number; // 本月成交数
